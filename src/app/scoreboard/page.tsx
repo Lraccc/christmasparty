@@ -10,23 +10,35 @@ interface Player {
   totalPoints: number;
 }
 
-// Mock data - replace with real data from your backend
-const mockPlayers: Player[] = [
-  { name: 'Alice', spinWins: 2, quizScore: 5, bingoWins: 1, totalPoints: 80 },
-  { name: 'Bob', spinWins: 1, quizScore: 6, bingoWins: 2, totalPoints: 90 },
-  { name: 'Charlie', spinWins: 3, quizScore: 4, bingoWins: 1, totalPoints: 85 },
-  { name: 'Diana', spinWins: 0, quizScore: 5, bingoWins: 3, totalPoints: 95 },
-  { name: 'Eve', spinWins: 1, quizScore: 3, bingoWins: 0, totalPoints: 45 },
-];
+function loadPlayers(): Player[] {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem('christmasPartyScores');
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return [];
+}
 
 export default function Scoreboard() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [sortBy, setSortBy] = useState<'total' | 'spin' | 'quiz' | 'bingo'>('total');
+  const [newPlayerName, setNewPlayerName] = useState('');
+  const [showAddPlayer, setShowAddPlayer] = useState(false);
 
   useEffect(() => {
-    // Sort players by total points initially
-    const sorted = [...mockPlayers].sort((a, b) => b.totalPoints - a.totalPoints);
+    // Load players from localStorage
+    const loadedPlayers = loadPlayers();
+    const sorted = [...loadedPlayers].sort((a, b) => b.totalPoints - a.totalPoints);
     setPlayers(sorted);
+    
+    // Auto-refresh every 5 seconds
+    const interval = setInterval(() => {
+      const refreshedPlayers = loadPlayers();
+      const sorted = [...refreshedPlayers].sort((a, b) => b.totalPoints - a.totalPoints);
+      setPlayers(sorted);
+    }, 5000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const sortPlayers = (criterion: 'total' | 'spin' | 'quiz' | 'bingo') => {
@@ -46,6 +58,52 @@ export default function Scoreboard() {
       }
     });
     setPlayers(sorted);
+  };
+
+  const addPlayer = () => {
+    if (!newPlayerName.trim()) return;
+    
+    const newPlayer: Player = {
+      name: newPlayerName.trim(),
+      spinWins: 0,
+      quizScore: 0,
+      bingoWins: 0,
+      totalPoints: 0,
+    };
+    
+    const updatedPlayers = [...players, newPlayer];
+    localStorage.setItem('christmasPartyScores', JSON.stringify(updatedPlayers));
+    setPlayers(updatedPlayers);
+    setNewPlayerName('');
+    setShowAddPlayer(false);
+  };
+
+  const updatePlayerScore = (playerName: string, field: 'spinWins' | 'quizScore' | 'bingoWins', value: number) => {
+    const updatedPlayers = players.map(p => {
+      if (p.name === playerName) {
+        const updated = { ...p, [field]: Math.max(0, p[field] + value) };
+        // Recalculate total points
+        updated.totalPoints = updated.spinWins * 10 + updated.quizScore * 5 + updated.bingoWins * 15;
+        return updated;
+      }
+      return p;
+    });
+    
+    localStorage.setItem('christmasPartyScores', JSON.stringify(updatedPlayers));
+    setPlayers(updatedPlayers);
+  };
+
+  const deletePlayer = (playerName: string) => {
+    const updatedPlayers = players.filter(p => p.name !== playerName);
+    localStorage.setItem('christmasPartyScores', JSON.stringify(updatedPlayers));
+    setPlayers(updatedPlayers);
+  };
+
+  const resetScores = () => {
+    if (confirm('Are you sure you want to reset all scores? This cannot be undone.')) {
+      localStorage.removeItem('christmasPartyScores');
+      setPlayers([]);
+    }
   };
 
   const getMedalEmoji = (index: number) => {
@@ -68,8 +126,45 @@ export default function Scoreboard() {
           🏆 Live Scoreboard 🏆
         </h1>
         <p className="text-center text-gray-600 mb-8">
-          Track everyone's progress and see who's winning!
+          Track everyone's progress and see who's winning! (Auto-refreshes every 5 seconds)
         </p>
+
+        {/* Admin controls */}
+        <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
+          <div className="flex flex-wrap gap-2 justify-center mb-4">
+            <button
+              onClick={() => setShowAddPlayer(!showAddPlayer)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-full font-bold hover:bg-blue-600 transition-all"
+            >
+              {showAddPlayer ? 'Cancel' : '+ Add Player'}
+            </button>
+            <button
+              onClick={resetScores}
+              className="bg-red-500 text-white px-4 py-2 rounded-full font-bold hover:bg-red-600 transition-all"
+            >
+              🔄 Reset All Scores
+            </button>
+          </div>
+
+          {showAddPlayer && (
+            <div className="flex gap-2 justify-center">
+              <input
+                type="text"
+                value={newPlayerName}
+                onChange={(e) => setNewPlayerName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
+                placeholder="Enter player name"
+                className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              />
+              <button
+                onClick={addPlayer}
+                className="bg-green-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-600 transition-all"
+              >
+                Add
+              </button>
+            </div>
+          )}
+        </div>
         
         {/* Sort buttons */}
         <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
@@ -131,6 +226,7 @@ export default function Scoreboard() {
                   <th className="px-6 py-4 text-center text-lg font-bold">📝 Quiz</th>
                   <th className="px-6 py-4 text-center text-lg font-bold">🎄 Bingo</th>
                   <th className="px-6 py-4 text-center text-lg font-bold">🏆 Total</th>
+                  <th className="px-6 py-4 text-center text-lg font-bold">Actions</th>
                 </tr>
               </thead>
               <tbody>
