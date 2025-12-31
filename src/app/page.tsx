@@ -13,14 +13,8 @@ const FLOATING_IMAGES = [
   { src: "/images/tampusfam1.jpg", size: 100, duration: 30, delay: 5, left: 85, top: 15 },
   { src: "/images/tampusfam2.png", size: 110, duration: 28, delay: 10, left: 15, top: 75 },
   { src: "/images/tampusfam.png", size: 90, duration: 32, delay: 15, left: 75, top: 70 },
-  { src: "/images/tampusfam2.png", size: 105, duration: 27, delay: 20, left: 50, top: 8 },
   { src: "/images/tampusfam1.jpg", size: 95, duration: 29, delay: 8, left: 90, top: 50 },
-  { src: "/images/tampusfam.png", size: 115, duration: 26, delay: 12, left: 8, top: 45 },
-  { src: "/images/tampusfam2.png", size: 85, duration: 31, delay: 18, left: 65, top: 85 },
-  { src: "/images/tampusfam1.jpg", size: 108, duration: 28, delay: 3, left: 30, top: 25 },
-  { src: "/images/tampusfam.png", size: 92, duration: 30, delay: 22, left: 45, top: 65 },
-  { src: "/images/tampusfam2.png", size: 112, duration: 27, delay: 6, left: 80, top: 32 },
-  { src: "/images/tampusfam1.jpg", size: 98, duration: 33, delay: 14, left: 20, top: 55 },
+  { src: "/images/tampusfam2.png", size: 85, duration: 31, delay: 18, left: 8, top: 45 },
 ];
 
 export default function Home() {
