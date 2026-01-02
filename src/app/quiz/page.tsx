@@ -96,6 +96,36 @@ const questions: Question[] = [
     options: ["Jr", "Pinky", "Love", "Irish"],
     correctAnswer: 0,
     emoji: "🎂"
+  },
+  {
+    question: "What year was the first Christmas celebrated?",
+    options: ["336 AD", "100 AD", "1 AD", "500 AD"],
+    correctAnswer: 0,
+    emoji: "🎄"
+  },
+  {
+    question: "In the song '12 Days of Christmas', what gift is given on the 7th day?",
+    options: ["Seven swans a-swimming", "Seven geese a-laying", "Seven lords a-leaping", "Seven maids a-milking"],
+    correctAnswer: 0,
+    emoji: "🦢"
+  },
+  {
+    question: "Which country started the tradition of putting up a Christmas tree?",
+    options: ["Germany", "United States", "England", "France"],
+    correctAnswer: 0,
+    emoji: "🎄"
+  },
+  {
+    question: "What are you supposed to do when you find yourself under the mistletoe?",
+    options: ["Kiss", "Dance", "Sing", "Make a wish"],
+    correctAnswer: 0,
+    emoji: "💋"
+  },
+  {
+    question: "What is the name of the Grinch's dog?",
+    options: ["Max", "Buddy", "Charlie", "Rex"],
+    correctAnswer: 0,
+    emoji: "🐕"
   }
 ];
 
